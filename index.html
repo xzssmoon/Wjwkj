@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Книжка для тебя 💗</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #ffe4ef 0%, #ffd0e4 50%, #ffc0dd 100%);
+    font-family: 'Segoe UI', 'Georgia', serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 25px 15px 40px;
+    overflow-x: hidden;
+  }
+
+  h1.title {
+    font-size: 2rem;
+    color: #ff3d8b;
+    text-align: center;
+    text-shadow: 0 0 8px #ff9ecb, 0 0 20px #ff6fb0, 0 0 35px #ff4d9e;
+    margin-bottom: 20px;
+    animation: glow 2.5s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from { text-shadow: 0 0 8px #ff9ecb, 0 0 18px #ff6fb0; }
+    to   { text-shadow: 0 0 14px #ffb3d9, 0 0 32px #ff4d9e, 0 0 50px #ff2e8f; }
+  }
+
+  /* ===== КНИГА ===== */
+  .book {
+    position: relative;
+    width: 360px;
+    max-width: 92vw;
+    height: 560px;
+    perspective: 2000px;
+  }
+
+  .page {
+    position: absolute;
+    inset: 0;
+    background: #fff8fb;
+    border-radius: 14px 18px 18px 14px;
+    padding: 22px 20px 26px;
+    box-shadow:
+      0 0 12px #ff6fb0,
+      0 0 30px rgba(255, 77, 158, .55),
+      inset 0 0 25px rgba(255, 200, 225, .6);
+    border: 2px solid #ff9ecb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-origin: left center;
+    transition: transform .8s cubic-bezier(.4,.1,.2,1), opacity .8s;
+    backface-visibility: hidden;
+    overflow: hidden;
+  }
+
+  /* корешок-линия слева, как у блокнота */
+  .page::before {
+    content: '';
+    position: absolute;
+    left: 14px; top: 0; bottom: 0;
+    width: 1px;
+    background: repeating-linear-gradient(to bottom, #ffc0dd 0 8px, transparent 8px 14px);
+  }
+
+  /* дырочки от пружины */
+  .page::after {
+    content: '';
+    position: absolute;
+    left: 5px; top: 30px; bottom: 30px;
+    width: 12px;
+    background-image: radial-gradient(circle, #ff7ab8 3px, transparent 4px);
+    background-size: 12px 26px;
+  }
+
+  .page.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: rotateY(-160deg) scale(.96);
+  }
+
+  .page-num {
+    position: absolute;
+    bottom: 8px; right: 16px;
+    font-size: .75rem;
+    color: #e0417f;
+    letter-spacing: 1px;
+    opacity: .7;
+  }
+
+  /* ===== ДЕКОР ===== */
+  .sticker {
+    position: absolute;
+    font-size: 28px;
+    opacity: .9;
+    filter: drop-shadow(0 0 6px #ff9ecb);
+  }
+  .sticker.tl { top: 8px; left: 26px; transform: rotate(-15deg); }
+  .sticker.tr { top: 10px; right: 12px; transform: rotate(18deg); }
+  .sticker.bl { bottom: 30px; left: 22px; transform: rotate(10deg); }
+  .sticker.br { bottom: 34px; right: 14px; transform: rotate(-12deg); }
+
+  /* скотч */
+  .tape {
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%) rotate(-4deg);
+    width: 90px; height: 24px;
+    background: rgba(255, 182, 213, .55);
+    border-left: 1px dashed #ff9ecb;
+    border-right: 1px dashed #ff9ecb;
+    box-shadow: 0 0 8px rgba(255, 122, 184, .5);
+  }
+
+  /* ===== ФОТО ===== */
+  .photo-frame {
+    background: #fff;
+    padding: 8px 8px 26px;
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(255, 77, 158, .35), 0 0 10px #ffb3d9;
+    transform: rotate(-2deg);
+    margin: 14px 0 16px;
+    max-width: 100%;
+  }
+  .photo-frame.alt { transform: rotate(2.5deg); }
+
+  .photo-frame img {
+    display: block;
+    width: 100%;
+    max-width: 260px;
+    border-radius: 4px;
+  }
+
+  .caption {
+    text-align: center;
+    font-size: .85rem;
+    color: #c72a6f;
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* ===== ТЕКСТ ===== */
+  .page h2 {
+    color: #ff3d8b;
+    font-size: 1.25rem;
+    text-align: center;
+    margin-bottom: 8px;
+    text-shadow: 0 0 8px #ffb3d9;
+  }
+
+  .page p.txt {
+    color: #a01f5a;
+    font-size: .95rem;
+    line-height: 1.55;
+    text-align: center;
+    margin-top: 6px;
+    padding: 0 6px;
+  }
+
+  /* большая буква-буквица */
+  .dropcap::first-letter {
+    font-size: 2.4rem;
+    color: #ff4d9e;
+    float: left;
+    line-height: .9;
+    padding-right: 6px;
+    text-shadow: 0 0 10px #ff9ecb;
+  }
+
+  /* сердце-разделитель */
+  .divider {
+    color: #ff7ab8;
+    font-size: 1.1rem;
+    letter-spacing: 8px;
+    margin: 10px 0;
+    text-shadow: 0 0 8px #ffb3d9;
+  }
+
+  /* ===== НАВИГАЦИЯ ===== */
+  .controls {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-top: 22px;
+  }
+
+  .nav-btn {
+    padding: 12px 26px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #ff7ab8, #ff3d8b);
+    border: 2px solid #ffd6e8;
+    border-radius: 40px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #ff6fb0, 0 0 24px rgba(255,77,158,.7);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .nav-btn:hover  { transform: scale(1.06); }
+  .nav-btn:active { transform: scale(.94); }
+  .nav-btn:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .counter {
+    color: #d6337a;
+    font-size: .95rem;
+    min-width: 60px;
+    text-align: center;
+    text-shadow: 0 0 8px #ffb3d9;
+  }
+
+  /* ===== СЕРДЕЧКИ ===== */
+  .heart {
+    position: fixed;
+    pointer-events: none;
+    font-size: 28px;
+    z-index: 999;
+    animation: fly 2.6s ease-out forwards;
+    user-select: none;
+  }
+  @keyframes fly {
+    0%   { opacity: 1; transform: translate(0,0) scale(.5); }
+    15%  { transform: translate(var(--x1), -60px) scale(1.2) rotate(20deg); }
+    100% { opacity: 0; transform: translate(var(--x2), -110vh) scale(.8) rotate(var(--rot)); }
+  }
+
+  @media (max-width: 420px) {
+    .book { height: 520px; }
+    h1.title { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1 class="title">Книжка для тебя 💗</h1>
+
+<div class="book" id="book">
+
+  <!-- СТРАНИЦА 1 — обложка -->
+  <div class="page" data-page="0">
+    <div class="tape"></div>
+    <span class="sticker tl">🌸</span>
+    <span class="sticker tr">✨</span>
+    <span class="sticker bl">💗</span>
+    <span class="sticker br">🎀</span>
+
+    <h2 style="margin-top:40px;">Для самой красивой 💖</h2>
+    <div class="divider">♥ ♥ ♥</div>
+
+    <div class="photo-frame">
+      <img src="https://i.ibb.co/PZ4q2xg7/IMG-20260929-163557-601.jpg" alt="Фото 1">
+      <div class="caption">самая нежная 🌸</div>
+    </div>
+
+    <p class="txt">Эта книжка собрана специально для тебя.<br>Листай дальше →</p>
+    <span class="page-num">1</span>
+  </div>
+
+  <!-- СТРАНИЦА 2 -->
+  <div class="page hidden" data-page="1">
+    <span class="sticker tl">💕</span>
+    <span class="sticker tr">🦋</span>
+    <span class="sticker br">🌷</span>
+
+    <h2>Ты очень красивая</h2>
+    <div class="divider">♥ ♥ ♥</div>
+
+    <div class="photo-frame alt">
+      <img src="https://i.ibb.co/ZzkjrDHF/IMG-20260929-163559-724.jpg" alt="Фото 2">
+      <div class="caption">самая милая ✨</div>
+    </div>
+
+    <p class="txt dropcap">Каждый раз, когда я смотрю на тебя, мир становится чуть ярче и теплее.</p>
+    <span class="page-num">2</span>
+  </div>
+
+  <!-- СТРАНИЦА 3 — комплименты -->
+  <div class="page hidden" data-page="2">
+    <span class="sticker tl">🌹</span>
+    <span class="sticker tr">💞</span>
+    <span class="sticker bl">✨</span>
+
+    <h2>Немного о тебе</h2>
+    <div class="divider">♥ ♥ ♥</div>
+
+    <p class="txt" style="text-align:left; line-height:1.9;">
+      💗 У тебя самая тёплая улыбка<br>
+      🌸 Глаза, в которых можно утонуть<br>
+      ✨ Голос, который успокаивает<br>
+      🎀 Доброе и нежное сердце<br>
+      💕 И ты просто очень красивая
+    </p>
+
+    <div class="divider" style="margin-top:14px;">♥ ♥ ♥</div>
+    <span class="page-num">3</span>
+  </div>
+
+  <!-- СТРАНИЦА 4 -->
+  <div class="page hidden" data-page="3">
+    <span class="sticker tl">💖</span>
+    <span class="sticker tr">🌺</span>
+    <span class="sticker br">💫</span>
+
+    <h2>Пожелание</h2>
+    <div class="divider">♥ ♥ ♥</div>
+
+    <p class="txt dropcap">
+      Пусть каждый твой день будет таким же нежным,
+      как эти страницы. Пусть тебя окружают только
+      добрые люди и тёплые моменты.
+    </p>
+
+    <div class="divider" style="margin-top:16px;">♥ ♥ ♥</div>
+    <p class="txt">Ты этого заслуживаешь 💗</p>
+    <span class="page-num">4</span>
+  </div>
+
+  <!-- СТРАНИЦА 5 — финал -->
+  <div class="page hidden" data-page="4">
+    <div class="tape"></div>
+    <span class="sticker tl">🎀</span>
+    <span class="sticker tr">💝</span>
+    <span class="sticker bl">🌸</span>
+    <span class="sticker br">✨</span>
+
+    <h2 style="margin-top:30px;">Конец 💕</h2>
+    <div class="divider">♥ ♥ ♥</div>
+
+    <div class="photo-frame" style="transform:rotate(-3deg);">
+      <img src="https://i.ibb.co/PZ4q2xg7/IMG-20260929-163557-601.jpg" alt="Фото 1">
+    </div>
+    <div class="photo-frame alt" style="margin-top:-10px;">
+      <img src="https://i.ibb.co/ZzkjrDHF/IMG-20260929-163559-724.jpg" alt="Фото 2">
+    </div>
+
+    <p class="txt">Спасибо, что ты есть 💗</p>
+    <span class="page-num">5</span>
+  </div>
+
+</div>
+
+<div class="controls">
+  <button class="nav-btn" id="prev">← Назад</button>
+  <span class="counter" id="counter">1 / 5</span>
+  <button class="nav-btn" id="next">Дальше →</button>
+</div>
+
+<script>
+  const pages   = document.querySelectorAll('.page');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const counter = document.getElementById('counter');
+  let current = 0;
+  const total = pages.length;
+
+  function render() {
+    pages.forEach((p, i) => {
+      p.classList.toggle('hidden', i !== current);
+    });
+    counter.textContent = (current + 1) + ' / ' + total;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+  }
+
+  nextBtn.addEventListener('click', () => {
+    if (current < total - 1) {
+      current++;
+      render();
+      burstFromBtn(nextBtn);
+    }
+  });
+
+  prevBtn.addEventListener('click', () => {
+    if (current > 0) {
+      current--;
+      render();
+    }
+  });
+
+  // свайпы на телефоне
+  let startX = 0;
+  document.getElementById('book').addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+  });
+  document.getElementById('book').addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (dx < -50 && current < total - 1) { current++; render(); burstFromBtn(nextBtn); }
+    if (dx >  50 && current > 0)         { current--; render(); }
+  });
+
+  // ===== СЕРДЕЧКИ =====
+  const emojis = ['💖','💗','💕','💞','💓','❤️','🌸','✨','🎀'];
+
+  function createHeart(x, y) {
+    const h = document.createElement('div');
+    h.className = 'heart';
+    h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    h.style.left = x + 'px';
+    h.style.top  = y + 'px';
+    h.style.setProperty('--x1', (Math.random() - .5) * 200 + 'px');
+    h.style.setProperty('--x2', (Math.random() - .5) * 400 + 'px');
+    h.style.setProperty('--rot', (Math.random() - .5) * 720 + 'deg');
+    h.style.fontSize = (20 + Math.random() * 26) + 'px';
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 2700);
+  }
+
+  function burst(x, y, n = 12) {
+    for (let i = 0; i < n; i++) setTimeout(() => createHeart(x, y), i * 45);
+  }
+
+  function burstFromBtn(btn) {
+    const r = btn.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + r.height / 2, 10);
+  }
+
+  // клик в любом месте = сердечки
+  document.addEventListener('click', e => {
+    if (e.target.closest('.nav-btn')) return;
+    burst(e.clientX, e.clientY, 6);
+  });
+
+  render();
+</script>
+
+</body>
+      </html>
